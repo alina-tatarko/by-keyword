@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GoogleParser {
+public class GoogleSearcher {
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36";
 
-    public List<String> parse(String mostFrequent) throws IOException {
-        List<String> phrases = doParse(mostFrequent);
+    public List<String> findMostPopularResults(String term) throws IOException {
+        List<String> phrases = doFindMostPopularResults(term);
         return phrases.stream()
                 .map(phrase -> phrase.replace(", ", " "))
                 .map(phrase -> phrase.split(" "))
@@ -24,9 +24,9 @@ public class GoogleParser {
                 .collect(Collectors.toList());
     }
 
-    private List<String> doParse(String mostFrequent) throws IOException {
+    private List<String> doFindMostPopularResults(String term) throws IOException {
         List<String> parsedWords = new ArrayList<>();
-        Document doc = Jsoup.connect("https://www.google.com/search?q=" + mostFrequent).userAgent(USER_AGENT).get();
+        Document doc = Jsoup.connect("https://www.google.com/search?q=" + term).userAgent(USER_AGENT).get();
         for (Element result : doc.select("h3.LC20lb")) {
             String title = result.text();
             parsedWords.add(title);

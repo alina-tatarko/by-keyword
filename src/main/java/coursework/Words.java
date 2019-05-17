@@ -1,11 +1,5 @@
 package coursework;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,38 +40,19 @@ class Words {
     }
 
     public List<String> getAdditional() throws IOException {
-        GoogleParser googleParser = new GoogleParser();
+        GoogleSearcher googleSearcher = new GoogleSearcher();
         if (getMostFrequent().isEmpty()) {
             return Collections.emptyList();
         }
-        return googleParser.parse(getMostFrequent().get());
+        return googleSearcher.findMostPopularResults(getMostFrequent().get());
     }
 
     public void writeIntoExcel(String file) throws IOException {
-        XSSFWorkbook outWorkbook = new XSSFWorkbook();
-        XSSFSheet mostFrSheet = outWorkbook.createSheet("Most frequent phrases");
-        int rowCount1 = 0;
-        for (String threeMostFr : getThreeMostFrequent()) {
-            Row row = mostFrSheet.createRow(rowCount1++);
-            Cell cell = row.createCell(0);
-            cell.setCellValue(threeMostFr);
-        }
-        XSSFSheet recomSheet = outWorkbook.createSheet("Recommended words");
-        int rowCount2 = 0;
-        for (String recommended : getRecommended()) {
-            Row row = recomSheet.createRow(rowCount2++);
-            Cell cell = row.createCell(0);
-            cell.setCellValue(recommended);
-        }
-        XSSFSheet addSheet = outWorkbook.createSheet("Additional words");
-        int rowCount3 = 0;
-        for (String additional : getAdditional()) {
-            Row row = addSheet.createRow(rowCount3++);
-            Cell cell = row.createCell(0);
-            cell.setCellValue(additional);
-        }
-        FileOutputStream outputStream = new FileOutputStream(file);
-        outWorkbook.write(outputStream);
+        Recommendations recommendations = new Recommendations(
+                getThreeMostFrequent(),
+                getAdditional(),
+                getRecommended());
+        ExcelIO.writeIntoExcel(file, recommendations);
     }
 }
 
